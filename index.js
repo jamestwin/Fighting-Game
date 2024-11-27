@@ -1,77 +1,99 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
-
+const gravity = 0.7;
+const tileWidth = 64;
+const tileHeight = 64;
 canvas.width = 1024;
 canvas.height = 576;
 
+c.imageSmoothingEnabled = false;
 c.fillRect(0, 0, canvas.width, canvas.height);
 
-const gravity = 0.7;
-class Sprite {
-    constructor({ position, }) {
-        this.position = position
-        this.height = 150
-        this.width = 50
-    }
-    draw() {
-    }
-    update() {
-        this.draw();
-    }
-}
 
-class Fighter {
-    constructor({ position, velocity, color, offset }) {
-        this.position = position
-        this.velocity = velocity
-        this.height = 150
-        this.width = 50
-        this.color = color
-        this.attackBox = {
-            position: {
-                x: this.position.x,
-                y: this.position.y
-            },
-            offset,
-            width: 100,
-            height: 50 
-        } 
-        this.lastKey
-        this.isAttacking = false
-        this.health = 100
-    }
-    draw() {
-        c.fillStyle = this.color;
-        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+const shop = new Sprite({
+    position: {
+        x: 0,
+        y: 0
+    },
+    imageSrc: './img/oak_woods_v1.0/decorations/shop_anim.png',
+    scale: 2
+})
 
-        // Attack box
-        if (this.isAttacking) {
-            c.fillStyle = 'yellow';
-            c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height);
-        }
-    }
-    update() {
-        this.draw();
-        this.attackBox.position.x = this.position.x + this.attackBox.offset.x
-        this.attackBox.position.y = this.position.y
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-        if(this.position.y + this.height + this.velocity.y >= canvas.height) {
-            this.velocity.y = 0;
-        } else {
-            this.velocity.y += gravity;
-        }
-    }
-    attack() {
-        this.isAttacking = true;
-        setTimeout(() => {
-            this.isAttacking = false;
-        }, 100);
-    }
+// Function to create background image sprite
+function createBackgroundSprite(backgroundImg) {
+    return new Sprite({
+        position: {
+            x: 0,
+            y: 0
+        },
+        imageSrc: backgroundImg,
+        scale: 3.20
+    });
 }
 
 
-const player1 = new Sprite({
+// Function to create a fence sprite
+function createFence(positionX, positionY) {
+    return new Sprite({
+        position: {
+            x: positionX,
+            y: positionY
+        },
+        imageSrc: './img/oak_woods_v1.0/decorations/fence_1.png',
+        scale: 3
+    });
+}
+
+
+// Function to create a cobble ground sprite
+function createCobbleGround(positionX) {
+    return new Tile({
+        position: {
+            x: positionX,
+            y: 470,
+        },
+        imageSrc: './img/oak_woods_v1.0/oak_woods_tileset.png',
+        tileX: 134,
+        tileY: 0,
+        scale: 2,
+        tileWidth: 70,
+        tileHeight: 24
+    })
+}
+
+
+// Function to create a normal ground sprite
+function createNormalGround(positionX) {
+    return new Tile({
+        position: {
+            x: positionX,
+            y: 470,
+        },
+        imageSrc: './img/oak_woods_v1.0/oak_woods_tileset.png',
+        tileX: 15,
+        tileY: 0,
+        scale: 2,
+        tileWidth: 67,
+        tileHeight: 24
+    })
+}
+
+const background1 = createBackgroundSprite('./img/oak_woods_v1.0/background/background_layer_1.png');
+const background2 = createBackgroundSprite('./img/oak_woods_v1.0/background/background_layer_2.png');
+const background3 = createBackgroundSprite('./img/oak_woods_v1.0/background/background_layer_3.png');
+const fence1 = createFence(150, 415);
+const fence2 = createFence(380, 415);
+const cobbleGround1 = createCobbleGround(0);
+const cobbleGround2 = createCobbleGround(2.857 * 49);
+const cobbleGround3 = createCobbleGround(2.857 * 236);
+const cobbleGround4 = createCobbleGround(2.857 * 284);
+const cobbleGround5 = createCobbleGround(2.857 * 332);
+const normalGround1 = createNormalGround(2.857 * 98);
+const normalGround2 = createNormalGround(2.857 * 144);
+const normalGround3 = createNormalGround(2.857 * 190);
+
+
+const player1 = new Fighter({
     position: {
         x: 0,
         y: 0
@@ -87,7 +109,7 @@ const player1 = new Sprite({
     }
 });
 
-const player2 = new Sprite({
+const player2 = new Fighter({
     position: {
         x: 400,
         y: 100
@@ -123,40 +145,7 @@ const keys = {
         pressed: false
     }
 }
-function rectangularCollision({ rectangle1, rectangle2 }) {
-    return (
-        rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x 
-        && rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width
-        && rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y
-        && rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
-    )
-}
 
-function determineWinner({ player1, player2, timerId }) {
-    clearTimeout(timerId);
-    document.getElementById('displayText').style.display = 'flex'
-        if (player1.health === player2.health) {
-            document.getElementById('displayText').innerText = 'It\'s a tie!';
-        } else if (player1.health > player2.health) {
-            document.getElementById('displayText').innerText = 'Player 1 wins!';
-        } else if (player1.health < player2.health) {
-            document.getElementById('displayText').innerText = 'Player 2 wins!';
-        }
-}
-
-let timer = 10
-let timerId
-function decreaseTimer() {
-    if (timer > 0) {
-        timerId = setTimeout(decreaseTimer, 1000)
-        timer--;
-        document.getElementById('timer').innerText = timer;
-    }
-    
-    if (timer === 0) {
-        determineWinner({ player1, player2 });
-    }
-}
 
 decreaseTimer();
 
@@ -164,10 +153,26 @@ function animate() {
     window.requestAnimationFrame(animate);
     c.fillStyle = 'black';  // Clear the canvas before drawing again.
     c.fillRect(0, 0, canvas.width, canvas.height);
+    background1.update();
+    background2.update();
+    background3.update();
+    fence1.update();
+    fence2.update();
+    cobbleGround1.update();
+    cobbleGround2.update();
+    normalGround1.update();
+    normalGround2.update();
+    normalGround3.update();
+    cobbleGround3.update();
+    cobbleGround4.update();
+    cobbleGround5.update();
     player1.update();
     player2.update();
     player1.velocity.x = 0;
     player2.velocity.x = 0;
+    shop.update();
+
+    
     // player1 1 Movement
     if (keys.a.pressed && player1.lastKey === 'a') {
         player1.velocity.x = -5;
