@@ -29,6 +29,7 @@ function createBackgroundSprite(backgroundImg) {
         },
         imageSrc: backgroundImg,
         scale: 3.20,
+        framesMax: 1
     });
 }
 
@@ -156,7 +157,8 @@ const player1 = new Fighter({
         },
         width: 160,
         height: 50
-    }
+    },
+    health: 500,
 });
 
 const player2 = new Fighter({
@@ -221,7 +223,8 @@ const player2 = new Fighter({
         },
         width: 160,
         height: 50
-    }
+    },
+    health: 300
 });
 
 const keys = {
@@ -245,10 +248,13 @@ const keys = {
     }
 }
 
-
+let timer = 120
 decreaseTimer();
 
 function animate() {
+    if (timer <= 0) {
+        return;
+    }
     window.requestAnimationFrame(animate);
     c.fillStyle = 'black';  // Clear the canvas before drawing again.
     c.fillRect(0, 0, canvas.width, canvas.height);
@@ -313,7 +319,7 @@ function animate() {
         player2.takeHit()
         player1.isAttacking = false
         gsap.to('#player2-health',{
-            width: player2.health + '%',
+            width: player2.health / 3+ '%',
         })
     }
 
@@ -325,7 +331,7 @@ function animate() {
         player1.takeHit()
         player2.isAttacking = false
         gsap.to('#player1-health',{
-            width: player1.health + '%',
+            width: player1.health / 5 + '%',
         })
     }
 

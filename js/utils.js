@@ -11,15 +11,44 @@ function determineWinner({ player1, player2, timerId }) {
     clearTimeout(timerId);
     document.getElementById('displayText').style.display = 'flex'
         if (player1.health === player2.health) {
-            document.getElementById('displayText').innerText = 'It\'s a tie!';
+            document.getElementById('displayText').innerHTML = 'It\'s a tie!';
+            gsap.to('#displayText', {
+                ease: 'elastic.out',
+                duration: 3,
+                opacity: 1,
+                onComplete: () => {
+                    document.getElementById('displayText').innerHTML = 'Play Again?';
+
+                }
+            })
         } else if (player1.health > player2.health) {
-            document.getElementById('displayText').innerText = 'Player 1 wins!';
+            document.getElementById('displayText').innerHTML = 'Player 1 wins!';
+            console.log('Player 1 wins!');
+            gsap.to('#displayText', {
+                ease: 'elastic.out',
+                duration: 3,
+                opacity: 1,
+                onComplete: () => {
+                    document.getElementById('displayText').innerHTML = 'Play Again?';
+
+                }
+            })
         } else if (player1.health < player2.health) {
-            document.getElementById('displayText').innerText = 'Player 2 wins!';
+            document.getElementById('displayText').innerHTML = 'Player 2 wins!';
+            console.log('Player 2 wins!');
+            gsap.to('#displayText', {
+                ease: 'elastic.out',
+                duration: 3,
+                opacity: 1,
+                onComplete: () => {
+                    document.getElementById('displayText').innerHTML = 'Play Again?';
+
+                }
+            })
         }
 }
 
-let timer = 10
+
 let timerId
 function decreaseTimer() {
     if (timer > 0) {

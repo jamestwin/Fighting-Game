@@ -75,6 +75,7 @@ class Fighter extends Sprite{
                   sprites, flip = false, 
                   attackBox = { offset: {}, width: undefined, height: undefined },
                   isDead = false,
+                  health = 100
                 }) 
         {
         super({
@@ -100,10 +101,10 @@ class Fighter extends Sprite{
         } 
         this.lastKey
         this.isAttacking = false
-        this.health = 100
+        this.health = health
         this.framesCurrent = 0;
         this.framesElapsed = 0
-        this.framesHold = 7
+        this.framesHold = 7 
         this.sprites = sprites
         this.isDead = isDead
         for (const sprite in this.sprites) {
