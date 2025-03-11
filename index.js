@@ -248,10 +248,11 @@ const keys = {
     }
 }
 
-let timer = 120
+let timer = 10
 decreaseTimer();
 
 function animate() {
+    let winnerDeclared = false
     if (timer <= 0) {
         return;
     }
@@ -340,8 +341,9 @@ function animate() {
     }
 
     // End game based on health
-    if (player1.health <= 0 || player2.health <= 0) {
+    if (player1.health <= 0 || player2.health <= 0 && !winnerDeclared) {
         determineWinner({ player1, player2, timerId });
+        winnerDeclared = true
     }
 }
 
