@@ -224,7 +224,7 @@ const player2 = new Fighter({
         width: 160,
         height: 50
     },
-    health: 300
+    health: 500
 });
 
 const keys = {
